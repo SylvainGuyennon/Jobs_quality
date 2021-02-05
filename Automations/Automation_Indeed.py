@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Feb  5 10:51:36 2021
 
 @author: Syl
 """
@@ -12,11 +11,14 @@ from bs4 import BeautifulSoup
 import re 
 import requests
 
-headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36',
-          'referer':'https://www.google.com/'}
 
 liste_id = []
 
+headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36',
+          'referer':'https://www.google.com/'}
+
+
+# on part chercher les id des différentes annonces pour pouvoir ensuite les parcourir.
 
 for i in range(0,500,50):
     r = requests.get("https://fr.indeed.com/emplois?q=Data+Analyst&limit=50&start="+str(i), headers=headers)
@@ -31,10 +33,14 @@ for i in range(0,500,50):
     for i in position :
         liste_id.append(clean[i+4:i+20])
     time.sleep(0.5)
+    
+ #on check le nombre d'id pour voir si le script a bien fonctionné.
 
 len(liste_id)
 
-df_in = pd.DataFrame(columns =["intitule","entreprise","Type Contrat","Niveau Experience","texte"]) # on crée le df
+# on crée le df
+
+df_in = pd.DataFrame(columns =["intitule","entreprise","Type Contrat","Niveau Experience","texte"]) 
 from selenium.common.exceptions import NoSuchElementException
 
 driver = webdriver.Chrome('C:/Users/Syl/chromedriver.exe')
@@ -58,7 +64,6 @@ for i in liste_id:
     liste_buffer = [intitule, entreprise, Type, xp, texte]
     df_in.loc[len(df_in)] = liste_buffer
     time.sleep(2)
-    
     
     
 df_in.index = list(range(len(df_in)))

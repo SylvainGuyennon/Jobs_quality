@@ -1,5 +1,8 @@
 from selenium import webdriver
 import time
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
+import pandas as pd
 
 driver = webdriver.Chrome('C:/Users/Syl/chromedriver.exe')
 driver.get("https://fr.linkedin.com/")
@@ -8,19 +11,26 @@ driver.get("https://fr.linkedin.com/")
 # Localiser la zone de texte
 search_field_log = driver.find_element_by_id("session_key")
 search_field_log.clear()
+
 # Saisir et confirmer le login
-search_field_log.send_keys("s.guyennon@gmail.com")
+search_field_log.send_keys("Rentrer son login ici")
+
 time.sleep(0.5)
+
 search_field_ps = driver.find_element_by_id("session_password")
 search_field_ps.clear()
+
 # Saisir et confirmer le pass
-search_field_ps.send_keys("le petit oiseau")
+search_field_ps.send_keys("Rentrer son password ici")
 
 #valider
 driver.find_element_by_class_name("sign-in-form__submit-button").click()
 
 time.sleep(2.5)
+
 links = []
+
+# on itère sur les 500 premières offres, 
 for i in range(0,500,25):
     url = "https://www.linkedin.com/jobs/search/?f_E=2&f_JT=F%2CC&f_TPR=r2592000&keywords=Data%20analyst&location=France&sortBy=DD&start="+str(i)
     driver.get(url)
@@ -43,9 +53,7 @@ for indice, sub_list in enumerate(links):
         liste_lien.append(element[:46])
         
 
-from urllib.request import urlopen
-from bs4 import BeautifulSoup
-import pandas as pd
+
 
 df_li = pd.DataFrame(columns =["intitule","entreprise","Type Contrat","Niveau Experience","texte"]) # on crée le df
 
