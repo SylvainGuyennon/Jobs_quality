@@ -6,10 +6,10 @@ Created on Tue Jan 12 16:15:08 2021
 """
 
 import pandas as pd
-df = pd.read_csv("C:/Users/Syl/Data/Cours/format/data_apec.csv" ,index_col=0)
+df = pd.read_csv("../data_extraites/data_apec.csv" ,index_col=0)
 
 def cleaning(x):
-    balises = ["<p>","</p>","<strong>","</strong>","<li>","<ul>","</li>","</ul>","<br />"]
+    balises = ["<p>","</p>","<strong>","</strong>","<li>","<ul>","</li>","</ul>","<br />","<div>" , "</div>"]
     for i in balises : 
         x = x.replace(i,"")
     x = x.replace(u'\xa0', u' ')
@@ -18,10 +18,7 @@ def cleaning(x):
 df['texteHtmlProfil'] = df['texteHtmlProfil'].apply(cleaning)
 df['texteHtml'] = df['texteHtml'].apply(cleaning)
 df['texteHtmlEntreprise'] = df['texteHtmlEntreprise'].apply(cleaning)
-
-df["annéeTxt"]=""
-for i in range(216):
-    try:
-        df.loc[i,"annéeTxt"] = df['texteHtmlProfil'][i][df['texteHtmlProfil'][i].index(" an")-1]
-    except : 
-        df["annéeTxt"][i]=None
+        
+df_t = df
+df_t['texte'] = df_t['texteHtmlProfil'] + df_t['texteHtml'] + df_t['texteHtmlEntreprise']
+df_t = df_t.drop(columns=["texteHtmlProfil",'texteHtml','texteHtmlEntreprise'], axis = 1)
