@@ -8,12 +8,9 @@ import pandas as pd
 
 df = pd.DataFrame(columns =['intitule','entreprise','type_contrat','xp','texte','site', 'salaire'])
 
-
 df_l = pd.read_csv("..\data_extraites\data_linkedin.csv",index_col=0)
 df_l['site']="Linkedin"
 df_l.columns = ['intitule','entreprise','type_contrat','xp','texte','site']
-
-
 
 
 df_a = pd.read_csv("../data_extraites/data_apec.csv" ,index_col=0)
@@ -21,8 +18,6 @@ df_a['texte'] = df_a['texteHtmlProfil'] + df_a['texteHtml'] + df_a['texteHtmlEnt
 df_a = df_a.drop(columns=["texteHtmlProfil",'texteHtml','texteHtmlEntreprise'], axis = 1)
 df_a['site']="apec"
 df_a.columns = ['intitule','entreprise','type_contrat','xp','salaire','texte','site']
-
-
 
 
 df_i = pd.read_csv("..\data_extraites\data_indeed.csv",index_col=0)
@@ -52,6 +47,10 @@ df_i['salaire'] = df_i['Type Contrat'].astype('str')
 for i in ["Stage","CDI","CDD","Intérim","Apprentissage","Temps plein","Temps partiel", 'Contrat pro', "Freelance / Indépendant",',',"-"]:
     for j in range(len(df_i)):
         df_i.loc[j,'salaire'] = df_i['salaire'][j].replace(i, '')
-
+df_i.rename(columns={'Niveau Experience':'xp', 'type':'type_contrat'}, inplace=True)
 df_i = df_i.drop(columns=["Type Contrat"], axis = 1)
+
+df_l['salaire'] = None
        
+df = pd.concat([df_a,df_i,df_l])
+df.to_csv("df_agg.csv")
