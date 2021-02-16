@@ -10,57 +10,32 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-df = pd.read_csv("df_agg", index_col=0)
+df = pd.read_csv("df_agg.csv", index_col=0)
 
 df.index = range(0, len(df))
 
-sample_size = len(df)
-originals = len(df.drop_duplicates(ignore_index = True))
+# sample_size = len(df)
+# originals = len(df.drop_duplicates(ignore_index = True))
                 
-duplicates = sample_size - originals
-labels = ["Annonces", "duplicatas"]
-data = [originals,duplicates]
+# duplicates = sample_size - originals
+# labels = ["Annonces", "duplicatas"]
+# data = [originals,duplicates]
 
-def make_autopct(values):
-    def my_autopct(pct):
-        total = sum(values)
-        val = int(round(pct*total/100.0))
-        return '{p:.2f}% ({v:d})'.format(p=pct,v=val)
-    return my_autopct
-
-k = 2*np.pi
-w = 2*np.pi
-dt = 0.01
-
-xmin = 0
-xmax = 3
-nbx = 100
-
-x = np.linspace(xmin, xmax, nbx)
+# def make_autopct(values):
+#     def my_autopct(pct):
+#         total = sum(values)
+#         val = int(round(pct*total/100.0))
+#         return '{p:.2f}% ({v:d})'.format(p=pct,v=val)
+#     return my_autopct
+# plt.figure(figsize =(10,8))
+# plt.pie([originals,duplicates], explode = (0 ,0.1), labels = labels, shadow =True, autopct=make_autopct(data))
 
 
-fig = plt.figure() # initialise la figure
-plt.figure(figsize =(10,8))
-plt.pie([originals,duplicates], explode = (0 ,0.1), labels = labels, shadow =True, autopct=make_autopct(data))
-line, = plt.plot([],[]) 
 
-# fonction à définir quand blit=True
-# crée l'arrière de l'animation qui sera présent sur chaque image
-def init():
-    line.set_data([],[])
-    return line,
+df = df.drop_duplicates(ignore_index = True)
 
-def animate(i): 
-    t = i * dt
-    y = np.cos(k*x - w*t)
-    line.set_data(x, y)
-    return line,
- 
-ani = animation.FuncAnimation(fig, animate, init_func=init, frames=100, blit=True, interval=20, repeat=False)
+dico_type = {"101888": "CDI" , "101887": "CDD" , "101889": "Interim", '597137' : 'Alternance', '597138': 'contrat_pro'}
+dico_xp = {"200269": "non_rempli", '597152':'confirmé','597153':'confirmé','597151':'Entry level','597150':'Entry level'}
 
-plt.show()
-
-
-# df = df.drop_duplicates(ignore_index = True)
-
-# df['xp']
+df['xp'].replace(dico_xp, inplace = True)
+df['type_contrat'].replace(dico_type, inplace = True)
