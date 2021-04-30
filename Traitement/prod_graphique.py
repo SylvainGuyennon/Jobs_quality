@@ -143,20 +143,36 @@ def isol(case) :
 
 df['texte_xp'] = df['texte_s'].apply(isol)
 
+
+n_deb=0
+n_es = 0
+n_prem = 0
+
 def annee_xp(s) :
     if s == None:
         return "none"
     elif "débutant" in s.lower() : 
+        global n_deb
+        n_deb +=1
         return [0]
     elif 'expérience significative' in s.lower():
+        global n_es
+        n_es +=1
         return [2]
+    elif 'expériences significatives' in s.lower() : 
+        return [4]
     elif ('première expérience' in s.lower()) | ('1ère expérience' in s.lower()):
+        global n_prem
+        n_prem +=1
         return [2]
-    elif "justifiez" in s.lower() : 
-        return "justi"
-    else : 
+    elif "expérience confirmée" in s.lower() : 
+        return [5]
+    elif re.findall(r'\d+', s) != [] : 
        temp = re.findall(r'\d+', s)
        return [number for number in list(map(int, temp)) if number < 13]
+    if "justifiez" in s.lower():
+       return [2]
+
 
 def scan(text):
     index = 0
@@ -171,7 +187,7 @@ def scan(text):
             index += len("expérience")
         for ind in l :
             x = ind-30
-            y = ind+55
+            y = ind+70
             if x < 0 :
                 x=0
             if y > len(text) :
@@ -187,7 +203,7 @@ def scan(text):
             index += len('experience')
         for ind in l :
             x = ind-30
-            y = ind+55
+            y = ind+70
             if x < 0 :
                 x=0
             if y > len(text) :
@@ -196,31 +212,73 @@ def scan(text):
 
         return result
 
-
-    
+  
 
 df['split_t'] = df['texte'].apply(scan)
 df['xp_reel'] = df['split_t'].apply(annee_xp)
 
+print("nb debutant =", n_deb)
+print("nb xp_significative = ", n_es)
+print("nb première xp = ", n_prem)
+
+## faire marcher ce masque la ###
+
+
+def formatage(x):
+    if x == 'première' : 
+        return 2
+    elif x == []:
+        return np.nan
+    elif type(x) is list : 
+        return max(x)
+
+df['xp_reel'] = df['xp_reel'].apply(formatage)    
+
 for i in range(len(df)):
-    if (df["type_reel"][i] in ["stage","Apprentissage "] ) & (df['xp_reel'][i] == "none"):
-        df['xp_reel'][i] = [0]
+    if (np.isnan(df["xp_reel"][i])) & (type(df["xp"][i]) == int):
+        df.loc[i,'xp_reel'] = df.loc[i,'xp']
+        
+for i in range(len(df)):
+    if (df["type_reel"][i].lower() in ["stage","apprentissage "] ) & (np.isnan(df['xp_reel'][i])):
+        df.loc[i,'xp_reel']= 0
 
 
-### faire marcher ce masque la ###
+for i in range(len(df)):
+    if df.loc[i,'xp_reel'] >= 7 : 
+        df.loc[i,'xp_reel'] = 7
+      
+dat = df['xp_reel'].value_counts(normalize=True).mul(100).sort_index()
+ax = dat.plot(kind='line', title= "Expérience réele demandée", )
+ax.set_ylabel('Pourcentage')
+ax.set_xlabel('Années')
 
-df['xp_reel'] = df['xp_reel'].mask(df['xp_reel'] == "none", [])
+#le remplissage à la main :'( 
 
-# def formatage(x):
-#     if x == 'première' : 
-#         return 2
-#     elif x == []:
-#         return np.nan
-#     elif type(x) is list : 
-#         return max(x)
+df.loc[7, 'xp_reel'] = 0
+df.loc[19, 'xp_reel'] = 1
+df.loc[23, 'xp_reel'] = 3
+df.loc[38, 'xp_reel'] = 2
+df.loc[23, 'xp_reel'] = 3
+df.loc[23, 'xp_reel'] = 3
+df.loc[23, 'xp_reel'] = 3
+df.loc[23, 'xp_reel'] = 3
+df.loc[23, 'xp_reel'] = 3
+df.loc[23, 'xp_reel'] = 3
+df.loc[23, 'xp_reel'] = 3
+df.loc[23, 'xp_reel'] = 3
+df.loc[23, 'xp_reel'] = 3
+df.loc[23, 'xp_reel'] = 3
+df.loc[23, 'xp_reel'] = 3
+df.loc[23, 'xp_reel'] = 3
+df.loc[23, 'xp_reel'] = 3
+df.loc[23, 'xp_reel'] = 3
+df.loc[23, 'xp_reel'] = 3
 
-# df['xp_reel'] = df['xp_reel'].apply(formatage)
+df_compte = df.xp_reel.value_counts().sort_index()
+a = pd.Series([df.xp_reel.isna().sum()])
+df_compte = df_compte.append(a)
+df_compte.index = ["0","1","2","3","4","5","6","7 et +", "Non Spécifié"]
 
-# sns.histplot(data=df,x='xp_reel', stat="probability")
+df_compte.plot(kind="pie")
 
-# df_vide = df[df['xp_reel'].isna()]
+df_none = df.loc[df['xp_reel'].isna()].drop(labels =["salaire","site", "entreprise"], axis = 1)
