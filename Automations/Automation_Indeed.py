@@ -68,5 +68,6 @@ for i in liste_id:
     
 df_in.index = list(range(len(df_in)))
 
+# on stocke dans un csv 
 
 df_in.to_csv("data_indeed.csv")

@@ -23,14 +23,15 @@ search_field_ps.clear()
 # Saisir et confirmer le pass
 search_field_ps.send_keys("Rentrer son password ici")
 
-#valider
+# Valider
 driver.find_element_by_class_name("sign-in-form__submit-button").click()
 
 time.sleep(2.5)
 
 links = []
 
-# on itère sur les 500 premières offres, 
+# on itère sur les 500 premières offres
+ 
 for i in range(0,500,25):
     url = "https://www.linkedin.com/jobs/search/?f_E=2&f_JT=F%2CC&f_TPR=r2592000&keywords=Data%20analyst&location=France&sortBy=DD&start="+str(i)
     driver.get(url)
@@ -53,7 +54,7 @@ for indice, sub_list in enumerate(links):
         liste_lien.append(element[:46])
         
 
-
+# on crée un df pour ranger tout ça
 
 df_li = pd.DataFrame(columns =["intitule","entreprise","Type Contrat","Niveau Experience","texte"]) # on crée le df
 
@@ -74,5 +75,7 @@ for url in liste_lien :
     liste_buffer.append("".join(str(texte)).replace("<p>", "").replace("</p>", "").replace("<strong>", "").replace("</strong>", "").replace("br />", "").replace("<br/>", u' ').replace('<u>', ' ').replace("</u>", ' ').replace(r"\\"," "))
     df_li.loc[len(df_li)] = liste_buffer
     time.sleep(1.5)
+
+# on sauvegarde les données
     
 df_li.to_csv("data_linkedin.csv")

@@ -27,16 +27,19 @@ df.index = range(0, len(df))
 # labels = ["Annonces", "duplicatas"]
 # data = [originals,duplicates]
 
-# def make_autopct(values):
-#     def my_autopct(pct):
-#         total = sum(values)
-#         val = int(round(pct*total/100.0))
-#         return '{p:.2f}% ({v:d})'.format(p=pct,v=val)
-#     return my_autopct
-# plt.figure(figsize =(10,8))
+def make_autopct(values):
+    def my_autopct(pct):
+        total = sum(values)
+        val = int(round(pct*total/100.0))
+        return '{p:.1f}% ({v:d})'.format(p=pct,v=val)
+    return my_autopct
+# plt.figure(figsize =(8,8), )
 # plt.pie([originals,duplicates], explode = (0 ,0.1), labels = labels, shadow =True, autopct=make_autopct(data))
+# plt.title("Quantité d'annonces en double")
+# plt.savefig('/Duplicata.png')
 
 
+# on va ensuite supprimer les doublons
 
 df = df.drop_duplicates(ignore_index = True)
 
@@ -58,8 +61,6 @@ for i in range(len(df)):
 df['texte'] = df['texte'].apply(remove_html_tags)
 
 df['type_reel'] = None
-
-
 
 
 def is_stage(x) :
@@ -91,30 +92,28 @@ for i in range(len(df)):
         df['type_reel'][i] = 'Freelance '
 
 
-# df['typei'] = df['intitule'].apply(is_stage)
-# df['typet'] = df['texte'].apply(is_stage)
+df['typei'] = df['intitule'].apply(is_stage)
+df['typet'] = df['texte'].apply(is_stage)
 
-# sns.countplot(x = df['xp'] , data=df)
-# plt.show()
-# sns.countplot(x = df['type_contrat'] , data=df)
-# plt.show()
-# sns.countplot(x = df['type_reel'] , data=df)
-# plt.show()
+sns.countplot(x = df['type_contrat'] , data=df)
+plt.show()
+sns.countplot(x = df['type_reel'] , data=df)
+plt.show()
 # sns.countplot(x = df['salaire'] , data=df)
 # plt.show()
-#df['ex'] = df['texte'].apply( lambda x : "expérience" in x.lower() or "experience" in x.lower())
+df['ex'] = df['texte'].apply( lambda x : "expérience" in x.lower() or "experience" in x.lower())
 
-# df_plus = df.loc[(df['type_contrat'] == "Full-time") |(df['type_contrat'] == "Non rempli")]
-# df_plus = df_plus.loc[(df['type_reel'] != "stage")]
-# df_plus = df_plus.loc[(df['type_reel'] != "CDI ")]
-# df_plus = df_plus.loc[(df['type_reel'] != "Apprentissage ")]
-# df_plus = df_plus.loc[(df['type_reel'] != "CDD ")]
-# df_plus = df_plus.loc[(df['type_reel'] != "Freelance ")]
+df_plus = df.loc[(df['type_contrat'] == "Full-time") |(df['type_contrat'] == "Non rempli")]
+df_plus = df_plus.loc[(df['type_reel'] != "stage")]
+df_plus = df_plus.loc[(df['type_reel'] != "CDI ")]
+df_plus = df_plus.loc[(df['type_reel'] != "Apprentissage ")]
+df_plus = df_plus.loc[(df['type_reel'] != "CDD ")]
+df_plus = df_plus.loc[(df['type_reel'] != "Freelance ")]
 
-# df['erreur_type'] = None
+df['erreur_type'] = None
 
-# for i in range(len(df)):
-#     df['erreur_type'][i] = (df['type_contrat'][i].lower()  == df['type_reel'][i].lower()) 
+for i in range(len(df)):
+    df.loc[i,'erreur_type'] = (df['type_contrat'][i].lower() == df['type_reel'][i].lower()) 
 
 
 ### Recherche années d'xp ###
@@ -248,9 +247,7 @@ for i in range(len(df)):
         df.loc[i,'xp_reel'] = 7
       
 dat = df['xp_reel'].value_counts(normalize=True).mul(100).sort_index()
-ax = dat.plot(kind='line', title= "Expérience réele demandée", )
-ax.set_ylabel('Pourcentage')
-ax.set_xlabel('Années')
+# ax = dat.plot(kind='line', title= "Expérience réele demandée" )
 
 #le remplissage à la main :'( 
 
@@ -258,27 +255,66 @@ df.loc[7, 'xp_reel'] = 0
 df.loc[19, 'xp_reel'] = 1
 df.loc[23, 'xp_reel'] = 3
 df.loc[38, 'xp_reel'] = 2
-df.loc[23, 'xp_reel'] = 3
-df.loc[23, 'xp_reel'] = 3
-df.loc[23, 'xp_reel'] = 3
-df.loc[23, 'xp_reel'] = 3
-df.loc[23, 'xp_reel'] = 3
-df.loc[23, 'xp_reel'] = 3
-df.loc[23, 'xp_reel'] = 3
-df.loc[23, 'xp_reel'] = 3
-df.loc[23, 'xp_reel'] = 3
-df.loc[23, 'xp_reel'] = 3
-df.loc[23, 'xp_reel'] = 3
-df.loc[23, 'xp_reel'] = 3
-df.loc[23, 'xp_reel'] = 3
-df.loc[23, 'xp_reel'] = 3
-df.loc[23, 'xp_reel'] = 3
+
 
 df_compte = df.xp_reel.value_counts().sort_index()
 a = pd.Series([df.xp_reel.isna().sum()])
 df_compte = df_compte.append(a)
 df_compte.index = ["0","1","2","3","4","5","6","7 et +", "Non Spécifié"]
 
-df_compte.plot(kind="pie")
+
+# plt.figure(figsize=[7,7])
+# df_compte.plot.area(title= "Expérience réele demandée (en années)", xlabel = "Nombre d'années", xlim = [0,7])
+# plt.show()
+# plt.savefig('/xp.png')
+
+# plt.figure(figsize=[8,8])
+# df_compte.plot(kind="pie", autopct=make_autopct(df_compte), radius = 0.8, pctdistance=1.4 ,labeldistance= 0.6, explode = (0,0,0,0,0,0,0.3,0.2,0), title= "Expérience réele demandée (en années)", shadow = True, ylabel="")
+# plt.savefig('/xp_pie.png')
+
+sns.countplot(x = df['xp_reel'] , data=df)
+plt.show()
+
+sns.countplot(x = df['xp'] , data=df)
+plt.show()
 
 df_none = df.loc[df['xp_reel'].isna()].drop(labels =["salaire","site", "entreprise"], axis = 1)
+
+
+for i in range(len(df)):
+    if df.loc[i,"xp"] == "Entry level" : 
+        df.loc[i,"xp"]=0
+    if df.loc[i,"xp"] == "non_rempli" :
+        df.loc[i,"xp"]=np.nan
+
+df.loc[:,'xp'] = df.loc[:,'xp'].astype(float)
+
+df['erreur_xp'] = df.xp == df.xp_reel
+
+for i in range(len(df)):
+    if df.loc[i,"site"] == "indeed" : 
+        df.loc[i,"erreur_xp"]=np.nan
+
+
+df_xp = df.loc[df['site']!= "indeed",["xp","xp_reel","erreur_xp","site"]]
+
+for i in range(len(df_xp)):
+    if (np.isnan(df_xp.iloc[i,0]) & np.isnan(df_xp.iloc[i,1])) : 
+        df_xp.iloc[i,2]= 1
+
+
+
+fig, (ax1, ax2, ax3) = plt.subplots(1,3, figsize=(15,5))
+fig.suptitle("Taux de fautes dans l'expérience des annonces")
+
+
+ax1.pie(df_xp["erreur_xp"].value_counts(), labels = ["Erronée", "Correct"], autopct=make_autopct(df_xp["erreur_xp"].value_counts()))
+ax1.title.set_text('Total')
+
+ax2.pie(df_xp.loc[df_xp["site"] == "Linkedin","erreur_xp"].value_counts(), labels = ["Erronée", "Correct"], autopct=make_autopct(df_xp.loc[df_xp["site"] == "Linkedin","erreur_xp"].value_counts()))
+ax2.title.set_text('Linkedin')
+
+ax3.pie(df_xp.loc[df_xp["site"] == "apec","erreur_xp"].value_counts(), labels = ["Erronée", "Correct"], autopct=make_autopct(df_xp.loc[df_xp["site"] == "apec","erreur_xp"].value_counts()))
+ax3.title.set_text('Linkedin')
+
+plt.show()

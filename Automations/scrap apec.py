@@ -8,7 +8,7 @@ import pandas as pd
 import requests
 import time
 
-#on check le nombre max d'annonces
+#on check le nombre max d'annonces via une requete sous forme de json
 
 url = 'https://www.apec.fr/cms/webservices/rechercheOffre'
 myjson = {"lieux":[],"fonctions":[],
@@ -29,6 +29,7 @@ y = x.text
 liste_totale =[]
 
 #on isole le nombre max 
+
 nb_job_total = int(y[-4:-1])
 
 for i in range((nb_job_total//100)+1):
@@ -49,7 +50,7 @@ for i in range((nb_job_total//100)+1):
     split = x.headers["X-Search-Results"].split()
     liste_totale += split
 
-    
+# on range le resultat dans un df
 
 df = pd.DataFrame(columns =['intitule','nomCompteEtablissement','idNomTypeContrat','idNomNiveauExperience','texteHtmlProfil','texteHtmlEntreprise','texteHtml','salaireTexte'])
 
@@ -71,5 +72,7 @@ for i in liste_lien:
         
     df.loc[len(df)] = item_offre
     
-    
+
+#on sauve le resultat
+
 df.to_csv(path_or_buf=None, sep=',', na_rep='', float_format=None, columns=None, header=True, index=True, index_label=None, mode='w', encoding=None, compression='infer')
