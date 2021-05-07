@@ -59,7 +59,7 @@ Après une analyse de texte, on arrive à determiner avec une précision relativ
 
 Il s'agit simplement d'annonces postées plusieurs fois. les raisons peuvent etre multiples.
 
-![Graphique dupli](./Traitement/Images/Duplicatas.png)
+![Graphique dupli](./Traitement/Images/Duplicata.png)
 
 
 
@@ -72,7 +72,7 @@ Certain sites ne repertorient pas de types de contrats, ou juste "temps plein", 
 
 Un exemple graphique : 
 
-![Graphique](./Traitement/Images/Tx_type.png)
+![Graphique types](./Traitement/Images/Tx_types.png)
 
 On peut voire une forte propention aux CDI
 
