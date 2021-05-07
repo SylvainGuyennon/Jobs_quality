@@ -323,7 +323,7 @@ ax2.pie(df_xp.loc[df_xp["site"] == "Linkedin","erreur_xp"].value_counts(), label
 ax2.title.set_text('Linkedin')
 
 ax3.pie(df_xp.loc[df_xp["site"] == "apec","erreur_xp"].value_counts(), labels = ["Erronée", "Correct"], autopct=make_autopct(df_xp.loc[df_xp["site"] == "apec","erreur_xp"].value_counts()))
-ax3.title.set_text('Linkedin')
+ax3.title.set_text('APEC')
 
 plt.show()
 fig.savefig('Images/Fautes_xp.png')
