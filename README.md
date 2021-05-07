@@ -55,9 +55,26 @@ Quel est le taux d'erreur dans les annonces ? (par exemple une annonce indéxée
 Après une analyse de texte, on arrive à determiner avec une précision relative (l'important est l'ordre de grandeur) la réalité des offres.
 
 
+### Note: les duplicatas
+
+Il s'agit simplement d'annonces postées plusieurs fois. les raisons peuvent etre multiples.
+
+![Graphique dupli](./Traitement/Images/Duplicatas.png)
 
 
 
+
+### Quels sont les types d'emploi proposés ? 
+
+Premier point délicat, les types d'emploi encodés dans les annonces ne sont pas forcément les véritables types. Un travail de recherche s'est imposé.
+
+Certain sites ne repertorient pas de types de contrats, ou juste "temps plein", ce qui ne donne que trop peu d'indications.
+
+Un exemple graphique : 
+
+![Graphique](./Traitement/Images/Tx_type.png)
+
+On peut voire une forte propention aux CDI
 
  
  

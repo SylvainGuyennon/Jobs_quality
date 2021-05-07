@@ -20,12 +20,12 @@ df = pd.read_csv("df_agg.csv", index_col=0)
 
 df.index = range(0, len(df))
 
-# sample_size = len(df)
-# originals = len(df.drop_duplicates(ignore_index = True))
+sample_size = len(df)
+originals = len(df.drop_duplicates(ignore_index = True))
                 
-# duplicates = sample_size - originals
-# labels = ["Annonces", "duplicatas"]
-# data = [originals,duplicates]
+duplicates = sample_size - originals
+labels = ["Annonces", "duplicatas"]
+data = [originals,duplicates]
 
 def make_autopct(values):
     def my_autopct(pct):
@@ -33,10 +33,10 @@ def make_autopct(values):
         val = int(round(pct*total/100.0))
         return '{p:.1f}% ({v:d})'.format(p=pct,v=val)
     return my_autopct
-# plt.figure(figsize =(8,8), )
-# plt.pie([originals,duplicates], explode = (0 ,0.1), labels = labels, shadow =True, autopct=make_autopct(data))
-# plt.title("Quantité d'annonces en double")
-# plt.savefig('/Duplicata.png')
+plt.figure(figsize =(8,8), )
+plt.pie([originals,duplicates], explode = (0 ,0.1), labels = labels, shadow =True, autopct=make_autopct(data))
+plt.title("Quantité d'annonces en double")
+plt.savefig('Images/Duplicata.png')
 
 
 # on va ensuite supprimer les doublons
@@ -95,12 +95,18 @@ for i in range(len(df)):
 df['typei'] = df['intitule'].apply(is_stage)
 df['typet'] = df['texte'].apply(is_stage)
 
-sns.countplot(x = df['type_contrat'] , data=df)
+fig, (ax1, ax2) = plt.subplots(1,2, figsize=(10,5))
+fig.suptitle("Repartition des types dans les annonces")
+
+ax1.pie(df['type_contrat'].value_counts(),labels = df['type_contrat'].value_counts().index , autopct=make_autopct(df['type_contrat'].value_counts()))
+ax1.title.set_text('Type encodé')
+
+ax2.pie(df['type_reel'].value_counts(),labels = df['type_reel'].value_counts().index , autopct=make_autopct(df['type_reel'].value_counts()))
+ax2.title.set_text("Type réel")
+
 plt.show()
-sns.countplot(x = df['type_reel'] , data=df)
-plt.show()
-# sns.countplot(x = df['salaire'] , data=df)
-# plt.show()
+fig.savefig('Images/Tx_types.png')
+
 df['ex'] = df['texte'].apply( lambda x : "expérience" in x.lower() or "experience" in x.lower())
 
 df_plus = df.loc[(df['type_contrat'] == "Full-time") |(df['type_contrat'] == "Non rempli")]
@@ -263,20 +269,22 @@ df_compte = df_compte.append(a)
 df_compte.index = ["0","1","2","3","4","5","6","7 et +", "Non Spécifié"]
 
 
-# plt.figure(figsize=[7,7])
-# df_compte.plot.area(title= "Expérience réele demandée (en années)", xlabel = "Nombre d'années", xlim = [0,7])
+plt.figure(figsize=[7,7])
+ax_xp = df_compte.plot.area(title= "Expérience réele demandée (en années)", xlabel = "Nombre d'années", xlim = [0,7])
+plt.show()
+ax_xp.figure.savefig('Images/xp.png')
+
+
+
+plt.figure(figsize=[8,8])
+df_compte.plot(kind="pie", autopct=make_autopct(df_compte), radius = 0.8, pctdistance=1.4 ,labeldistance= 0.6, explode = (0,0,0,0,0,0,0.3,0.2,0), title= "Expérience réele demandée (en années)", shadow = True, ylabel="")
+plt.savefig('Images/xp_pie.png')
+
+# sns.countplot(x = df['xp_reel'] , data=df)
 # plt.show()
-# plt.savefig('/xp.png')
 
-# plt.figure(figsize=[8,8])
-# df_compte.plot(kind="pie", autopct=make_autopct(df_compte), radius = 0.8, pctdistance=1.4 ,labeldistance= 0.6, explode = (0,0,0,0,0,0,0.3,0.2,0), title= "Expérience réele demandée (en années)", shadow = True, ylabel="")
-# plt.savefig('/xp_pie.png')
-
-sns.countplot(x = df['xp_reel'] , data=df)
-plt.show()
-
-sns.countplot(x = df['xp'] , data=df)
-plt.show()
+# sns.countplot(x = df['xp'] , data=df)
+# plt.show()
 
 df_none = df.loc[df['xp_reel'].isna()].drop(labels =["salaire","site", "entreprise"], axis = 1)
 
@@ -318,3 +326,4 @@ ax3.pie(df_xp.loc[df_xp["site"] == "apec","erreur_xp"].value_counts(), labels = 
 ax3.title.set_text('Linkedin')
 
 plt.show()
+fig.savefig('Images/Fautes_xp.png')
