@@ -99,6 +99,7 @@ Note = Indeed ne permet pas d'encoder de niveau d'expérience. Je ne peux donc p
 
 On peut remarquer un score mauvais pour Linkedin (Plus de 50%!).
 Il peut être expliqué par le fait qu'il s'agit du site le plus important, et donc le plus enclin aux erreurs. Je ne m'attendais cependant pas à un tel niveau.
+
 L'APEC propose un système d'encodage plus fin, les erreurs viennent souvent du fait qu'il existe un encodage "tout niveaux acceptés", alors que ce n'est pas du tout le cas.
 
 Linkedin propose un encodage "Débutant", qui demandent la plupart du temps une expérience d'au moins 2-3 ans

@@ -33,10 +33,11 @@ def make_autopct(values):
         val = int(round(pct*total/100.0))
         return '{p:.1f}% ({v:d})'.format(p=pct,v=val)
     return my_autopct
-plt.figure(figsize =(8,8), )
-plt.pie([originals,duplicates], explode = (0 ,0.1), labels = labels, shadow =True, autopct=make_autopct(data))
-plt.title("Quantité d'annonces en double")
-plt.savefig('Images/Duplicata.png')
+
+fig_d, ax_d = plt.subplots(figsize=(8,8))
+ax_d.pie([originals,duplicates], explode = (0 ,0.1), labels = labels, shadow =True, autopct=make_autopct(data))
+ax_d.set(title="Proportion des annonces en doubles")
+ax_d.figure.savefig('Images/Duplicata.png')
 
 
 # on va ensuite supprimer les doublons
@@ -95,15 +96,17 @@ for i in range(len(df)):
 df['typei'] = df['intitule'].apply(is_stage)
 df['typet'] = df['texte'].apply(is_stage)
 
-fig, (ax1, ax2) = plt.subplots(1,2, figsize=(10,5))
+fig, (ax1, ax2) = plt.subplots(1,2, figsize=(10,6))
 fig.suptitle("Repartition des types dans les annonces")
+plt.subplots_adjust(wspace = -0.1)
 
-ax1.pie(df['type_contrat'].value_counts(),labels = df['type_contrat'].value_counts().index , autopct=make_autopct(df['type_contrat'].value_counts()))
+ax1.pie(df['type_contrat'].value_counts(),autopct=make_autopct(df['type_contrat'].value_counts()))
 ax1.title.set_text('Type encodé')
 
-ax2.pie(df['type_reel'].value_counts(),labels = df['type_reel'].value_counts().index , autopct=make_autopct(df['type_reel'].value_counts()))
+ax2.pie(df['type_reel'].value_counts(), autopct=make_autopct(df['type_reel'].value_counts()))
 ax2.title.set_text("Type réel")
 
+fig.legend(labels = df['type_reel'].value_counts().index)
 plt.show()
 fig.savefig('Images/Tx_types.png')
 
@@ -252,8 +255,6 @@ for i in range(len(df)):
     if df.loc[i,'xp_reel'] >= 7 : 
         df.loc[i,'xp_reel'] = 7
       
-dat = df['xp_reel'].value_counts(normalize=True).mul(100).sort_index()
-# ax = dat.plot(kind='line', title= "Expérience réele demandée" )
 
 #le remplissage à la main :'( 
 
@@ -267,18 +268,24 @@ df_compte = df.xp_reel.value_counts().sort_index()
 a = pd.Series([df.xp_reel.isna().sum()])
 df_compte = df_compte.append(a)
 df_compte.index = ["0","1","2","3","4","5","6","7 et +", "Non Spécifié"]
+dat = df['xp_reel'].value_counts(normalize=True).mul(100).sort_index()
 
 
-plt.figure(figsize=[7,7])
-ax_xp = df_compte.plot.area(title= "Expérience réele demandée (en années)", xlabel = "Nombre d'années", xlim = [0,7])
+fig_xp, ax_xp = plt.subplots(figsize=(8,8))
+ax_xp.plot(dat)
+ax_xp.set( title = "Expérience réele demandée (en années)", xlabel = "Nombre d'années", ylabel = "Pourcentage", xlim = [0,7])
 plt.show()
 ax_xp.figure.savefig('Images/xp.png')
 
 
+fig_pxp, ax_pxp = plt.subplots(figsize=(8,8))
 
-plt.figure(figsize=[8,8])
-df_compte.plot(kind="pie", autopct=make_autopct(df_compte), radius = 0.8, pctdistance=1.4 ,labeldistance= 0.6, explode = (0,0,0,0,0,0,0.3,0.2,0), title= "Expérience réele demandée (en années)", shadow = True, ylabel="")
-plt.savefig('Images/xp_pie.png')
+ax_pxp.pie(df_compte,  autopct=make_autopct(df_compte), radius = 0.8, pctdistance=1.3, explode = (0,0,0,0,0,0,0.3,0.2,0))
+ax_pxp.set( title = "Expérience réele demandée (en années)")
+plt.legend(df_compte.index, loc =2 , bbox_to_anchor=(1, 1))
+plt.show()
+ax_pxp.figure.savefig('Images/xp_pie.png')
+
 
 # sns.countplot(x = df['xp_reel'] , data=df)
 # plt.show()
@@ -316,13 +323,13 @@ fig, (ax1, ax2, ax3) = plt.subplots(1,3, figsize=(15,5))
 fig.suptitle("Taux de fautes dans l'expérience des annonces")
 
 
-ax1.pie(df_xp["erreur_xp"].value_counts(), labels = ["Erronée", "Correct"], autopct=make_autopct(df_xp["erreur_xp"].value_counts()))
+ax1.pie(df_xp["erreur_xp"].value_counts(), labels = ["Erronée", "Correct"], autopct=make_autopct(df_xp["erreur_xp"].value_counts()), colors = ['red','green'])
 ax1.title.set_text('Total')
 
-ax2.pie(df_xp.loc[df_xp["site"] == "Linkedin","erreur_xp"].value_counts(), labels = ["Erronée", "Correct"], autopct=make_autopct(df_xp.loc[df_xp["site"] == "Linkedin","erreur_xp"].value_counts()))
+ax2.pie(df_xp.loc[df_xp["site"] == "Linkedin","erreur_xp"].value_counts(), labels = ["Erronée", "Correct"], autopct=make_autopct(df_xp.loc[df_xp["site"] == "Linkedin","erreur_xp"].value_counts()), colors = ['red','green'])
 ax2.title.set_text('Linkedin')
 
-ax3.pie(df_xp.loc[df_xp["site"] == "apec","erreur_xp"].value_counts(), labels = ["Erronée", "Correct"], autopct=make_autopct(df_xp.loc[df_xp["site"] == "apec","erreur_xp"].value_counts()))
+ax3.pie(df_xp.loc[df_xp["site"] == "apec","erreur_xp"].value_counts(), labels = ["Erronée", "Correct"], autopct=make_autopct(df_xp.loc[df_xp["site"] == "apec","erreur_xp"].value_counts()), colors = ['red','green'])
 ax3.title.set_text('APEC')
 
 plt.show()
